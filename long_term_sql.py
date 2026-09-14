@@ -1,12 +1,15 @@
 import mysql.connector
-import datetime
 
-class table: 
+
+class table:
     def __init__(self):
         self.conn = None
 
-    def connect(self):
+    @property
+    def get_conn(self):
+        return self.conn
 
+    def connect(self):
         self.conn = mysql.connector.connect(
             host="localhost",
             user="harness_user",
@@ -29,13 +32,9 @@ class table:
         cursor.execute(f"DROP TABLE {table_name}")
         self.conn.commit()
 
-    def create_entry(self, dict, cursor):
-        if not dict:
-            return
-        #logic to extract stuff from dict
-        for i in dict:
-            values = (i["role"], i["content"])
-            cursor.execute("INSERT INTO chats (role, content) VALUES (%s, %s)", values)
+    def create_entry(self, role, content, cursor):
+        values = (role, content)
+        cursor.execute("INSERT INTO chats (role, content) VALUES (%s, %s)", values)
         self.conn.commit()
 
     def purge_table(self, cursor):
