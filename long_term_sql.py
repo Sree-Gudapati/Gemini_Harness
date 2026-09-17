@@ -72,4 +72,4 @@ class table:
         # Use %s placeholder for values
         query = f"SELECT `{column}` FROM `{table}` WHERE `{column}` = %s"
         cursor.execute(query, (value,))
-        return cursor.fetchall()  # Returns list of rows
+        return cursor.fetchall()  # Returns list of matching rows (empty list if none)

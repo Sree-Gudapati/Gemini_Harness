@@ -4,7 +4,7 @@ import os
 class tools:
 
     def __init__(self, cursor, sql_table):
-        self.tool_list = [self.read_directories, self.directory_permissions, self.request_directory_access]
+        self.tool_list = [self.read_directories, self.read_file]
         self.cursor = cursor
         self.sql_table = sql_table
 
@@ -17,7 +17,7 @@ class tools:
 
         query_result = self.sql_table.specific_query(cursor, 'filepath', directory_path, 'path_access_perms')
 
-        if query_result == directory_path:
+        if query_result:
             return "Permission To Access Already Granted"
 
         else:
@@ -35,7 +35,7 @@ class tools:
 
                 data = {
                    "filepath": directory_path,
-                   #"permission_type": "read",
+                 #  "permission_type": f"{permission_type}",
                    #"description": "Granted at runtime"
                 }
 
@@ -79,3 +79,15 @@ class tools:
         except:
             return f"There was an error with the tool call"
 
+    def read_file(self, file_path:str):
+        """Read file {file_path}, check permissions first then read"""
+        directory = os.path.dirname(file_path)
+
+        perm_result = self.directory_permissions(directory)
+
+        if perm_result not in ("Permission To Access Already Granted", f"Permission Granted for {directory}"):
+            return perm_result
+
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read()
+            return content
